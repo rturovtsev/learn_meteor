@@ -1,4 +1,4 @@
-Comments = new Meteor.Collection('comments');
+Comments = new Mongo.Collection('comments');
 
 Meteor.methods({
 	comment: function(commentAttributes) {
@@ -25,6 +25,12 @@ Meteor.methods({
 
 		Posts.update(comment.postId, {$inc: {commentsCount: 1}});
 
-		return Comments.insert(comment);
+		//создаем комментарий и сохраняем id
+		comment._id = Comments.insert(comment);
+
+		//создаем уведомление, информируя пользователя о новом комментарии
+		createCommentNotification(comment);
+
+		return comment._id;
 	}
 });
